@@ -1,4 +1,4 @@
-package com.solution.yeekogames;
+package com.solution.nonthread;
 
 import java.net.URL;
 
@@ -6,9 +6,8 @@ import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
-public class YekooGamesSolution implements Runnable {
+public class SequentialSolution implements Runnable {
 
 	String msisdn;
 
@@ -16,7 +15,7 @@ public class YekooGamesSolution implements Runnable {
 
 	String cmpUrl;
 
-	public YekooGamesSolution(String msisdn, String ip, String cmpUrl) {
+	public SequentialSolution(String msisdn, String ip, String cmpUrl) {
 		this.msisdn = msisdn;
 		this.ip = ip;
 		this.cmpUrl = cmpUrl;
@@ -52,27 +51,6 @@ public class YekooGamesSolution implements Runnable {
 			webClient.addRequestHeader("Upgrade-Insecure-Requests", "1");
 			webClient.getOptions().setUseInsecureSSL(true);
 
-//			webClient.setConfirmHandler(new ConfirmHandler() {
-//
-//				private static final long serialVersionUID = -3309913321204235292L;
-//
-//				public boolean handleConfirm(Page page, String message) {
-//					System.out.println("confirm popup message::" + message);
-//					System.out.println("------------ DONE --------------");
-//					return true;
-//				}
-//			});
-//
-//			webClient.setAlertHandler(new AlertHandler() {
-//
-//				private static final long serialVersionUID = -8353469780277735441L;
-//
-//				public void handleAlert(Page page, String message) {
-//					System.out.println("Alert handler ::" + message);
-//					System.out.println("------------ DONE --------------");
-//				}
-//			});
-
 			URL url2 = new URL(cmpUrl);
 			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
@@ -80,35 +58,43 @@ public class YekooGamesSolution implements Runnable {
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
 					+ requestSettings2.getUrl());
 			HtmlPage firstHtmlPage = (HtmlPage) webClient.getPage(requestSettings2);
+			
+			System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
+			System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
 
 			if (firstHtmlPage != null) {
-
+				
+				long start = System.currentTimeMillis();
+				
 				synchronized (firstHtmlPage) {
-					webClient.waitForBackgroundJavaScript(3000L);
+					webClient.waitForBackgroundJavaScript(5000L);
 				}
+				
+				long end = System.currentTimeMillis();
+				System.out.println("------------ DONE --------------");
+				System.out.println("Total time taken::::" + (end - start));
+				
+				
 
-				System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
-				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
+//				HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
+//						.getByXPath("/html/body//form//input[@type='submit']").get(0);
 
-				HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
-						.getByXPath("/html/body//form//input[@type='submit']").get(0);
-
-				if (htmlSubmitInput != null) {
-					HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
-
-					synchronized (secondPage) {
-						webClient.waitForBackgroundJavaScript(3000L);
-					}
-
-					HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondPage.getElementById("submit");
-					if (secondPageButton != null) {
-						secondPageButton.click();
-						System.out.println("------------ DONE --------------");
-					} else {
-						System.out.println("-----------------Not done yet---------------");
-					}
-
-				}
+//				if (htmlSubmitInput != null) {
+//					HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
+//
+//					synchronized (secondPage) {
+//						webClient.waitForBackgroundJavaScript(3000L);
+//					}
+//
+//					HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondPage.getElementById("submit");
+//					if (secondPageButton != null) {
+//						secondPageButton.click();
+//						System.out.println("------------ DONE --------------");
+//					} else {
+//						System.out.println("-----------------Not done yet---------------");
+//					}
+//
+//				}
 
 			} else {
 				System.out.println("First HTML page not found");
@@ -122,8 +108,9 @@ public class YekooGamesSolution implements Runnable {
 		}
 		return null;
 	}
-
+	
 	public void run() {
 		getProcessSolution(this.msisdn, this.ip, this.cmpUrl);
 	}
+
 }

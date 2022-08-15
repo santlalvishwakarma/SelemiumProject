@@ -7,8 +7,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.solution.playwing.PlaywingSolution;
-
 public class ProcessYekooGamesSolution {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
