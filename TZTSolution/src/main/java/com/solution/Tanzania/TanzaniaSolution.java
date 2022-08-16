@@ -1,7 +1,6 @@
 package com.solution.Tanzania;
 
 import java.net.URL;
-import java.util.LinkedList;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ConfirmHandler;
@@ -9,7 +8,6 @@ import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -19,7 +17,8 @@ public class TanzaniaSolution implements Runnable {
 	String ip;
 
 	String cmpUrl;
-	final static LinkedList<WebWindow> windows = new LinkedList<WebWindow>();
+
+	int counter;
 
 	public TanzaniaSolution(String msisdn, String ip, String cmpUrl) {
 		this.msisdn = msisdn;
@@ -59,10 +58,12 @@ public class TanzaniaSolution implements Runnable {
 			webClient.getOptions().setUseInsecureSSL(true);
 
 			webClient.setConfirmHandler(new ConfirmHandler() {
-				
+
 				public boolean handleConfirm(Page page, String message) {
-					System.out.println("confirm popup message::" + message);
-					System.out.println("------------ DONE --------------");
+					counter++;
+					//System.out.println("confirm popup message::" + message);
+					System.out.println("popup count--->" + counter);
+					// System.out.println("------------ DONE --------------");
 					return true;
 				}
 			});
@@ -77,24 +78,55 @@ public class TanzaniaSolution implements Runnable {
 
 			System.out.println("URL--> " + page22.getBaseURI());
 
-			HtmlAnchor anchor = (HtmlAnchor) (page22.getElementById("gnrbtn"));
-			if (anchor != null) {
-				HtmlPage clickPage = (HtmlPage) anchor.click();
+			boolean anchorFlag = false;
 
-				synchronized (clickPage) {
-					webClient.waitForBackgroundJavaScript(3000L);
+			while (!anchorFlag) {
+				HtmlAnchor anchor = (HtmlAnchor) (page22.getElementById("gnrbtn"));
+				if (anchor != null) {
+
+					HtmlPage htmlPage = anchor.click();
+
+					synchronized (htmlPage) {
+						webClient.waitForBackgroundJavaScript(3000L);
+					}
+					
+					if (htmlPage.getUrl().getPath().contains("Success")) {
+						anchorFlag = true;
+						System.out.println("page Url Path::" + htmlPage.getUrl());
+						System.out.println("------------ DONE --------------" + counter);
+					}
+					
+					if (htmlPage.getUrl().getPath().contains("Failed") || htmlPage.getUrl().getPath().contains("failed")) {
+						anchorFlag = true;
+						System.out.println("page Url Path::" + htmlPage.getUrl());
+						System.out.println("url failed not done");
+					}
+
+//					HtmlAnchor secondAnchor = (HtmlAnchor) (page22.getElementById("gnrbtn"));
+//
+//					if (secondAnchor != null) {
+//
+//						HtmlPage secondClickPage = (HtmlPage) secondAnchor.click();
+//
+//						Page page = secondClickPage.getPage();
+//						page.getUrl();
+//						page.getWebResponse().getContentAsString();
+//						synchronized (secondClickPage) {
+//							webClient.waitForBackgroundJavaScript(3000L);
+//						}
+//					}
+
+				} else {
+					System.out.println("anchorFlag true::");
+					anchorFlag = true;
 				}
-				
-			} else {
-				System.out.println("Anchor Button not found--> ");
 			}
 
-			
 		} catch (Exception e) {
 			// e.printStackTrace();
 			System.out.println("Exception occured on MSISDN-->" + msisdn + "--> Error Msg-->" + e.getMessage());
 		} finally {
-			 webClient.close();
+			webClient.close();
 		}
 		return null;
 	}

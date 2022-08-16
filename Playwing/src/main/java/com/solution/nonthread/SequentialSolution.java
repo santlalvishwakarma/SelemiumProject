@@ -1,11 +1,23 @@
 package com.solution.nonthread;
 
+import java.io.IOException;
 import java.net.URL;
 
+import com.gargoylesoftware.htmlunit.AlertHandler;
+import com.gargoylesoftware.htmlunit.AppletConfirmHandler;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.PromptHandler;
+import com.gargoylesoftware.htmlunit.RefreshHandler;
+import com.gargoylesoftware.htmlunit.StatusHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.html.HtmlApplet;
+import com.gargoylesoftware.htmlunit.html.HtmlObject;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.webstart.WebStartHandler;
 
 public class SequentialSolution implements Runnable {
 
@@ -24,7 +36,7 @@ public class SequentialSolution implements Runnable {
 	public static int k = 0;
 
 	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient();
+		WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
 		try {
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
@@ -50,6 +62,59 @@ public class SequentialSolution implements Runnable {
 			webClient.addRequestHeader("X-FRAME-OPTIONS", "SAMEORIGIN");
 			webClient.addRequestHeader("Upgrade-Insecure-Requests", "1");
 			webClient.getOptions().setUseInsecureSSL(true);
+			
+			webClient.setStatusHandler(new StatusHandler() {
+				
+				private static final long serialVersionUID = 2862902795870220693L;
+
+				public void statusMessageChanged(Page page, String message) {
+					System.out.println("status handler message::" + message);
+				}
+			});
+			
+			webClient.setAlertHandler(new AlertHandler() {
+				
+				private static final long serialVersionUID = -5473045241892709789L;
+
+				public void handleAlert(Page page, String message) {
+					System.out.println("alert handler message::" + message);
+				}
+			});
+			
+			webClient.setAppletConfirmHandler(new AppletConfirmHandler() {
+				
+				public boolean confirm(HtmlObject applet) {
+					System.out.println("applet controller::");
+					return false;
+				}
+				
+				public boolean confirm(HtmlApplet applet) {
+					System.out.println("applet controller::");
+					return false;
+				}
+			});
+			
+			webClient.setPromptHandler(new PromptHandler() {
+				
+				public String handlePrompt(Page page, String message, String defaultValue) {
+					System.out.println("PromptHandler::");
+					return null;
+				}
+			});
+			
+			webClient.setRefreshHandler(new RefreshHandler() {
+				
+				public void handleRefresh(Page page, URL url, int seconds) throws IOException {
+					System.out.println("RefreshHandler::" + url.toString());					
+				}
+			});
+			
+			webClient.setWebStartHandler(new WebStartHandler() {
+				
+				public void handleJnlpResponse(WebResponse webResponse) {
+					System.out.println("WebStartHandler::");
+				}
+			});
 
 			URL url2 = new URL(cmpUrl);
 			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
@@ -69,7 +134,7 @@ public class SequentialSolution implements Runnable {
 				synchronized (firstHtmlPage) {
 					webClient.waitForBackgroundJavaScript(5000L);
 				}
-				
+				System.out.println("current page url::" + webClient.getTopLevelWindows().get(0).getEnclosedPage().getUrl());
 				long end = System.currentTimeMillis();
 				System.out.println("------------ DONE --------------");
 				System.out.println("Total time taken::::" + (end - start));
