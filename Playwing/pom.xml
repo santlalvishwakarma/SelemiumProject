@@ -103,7 +103,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.playwing.ProcessPlaywingSolution</mainClass>
+							<mainClass>com.solution.nonthread.ProcessSequentialSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

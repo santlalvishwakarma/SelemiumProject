@@ -13,11 +13,9 @@ import com.gargoylesoftware.htmlunit.RefreshHandler;
 import com.gargoylesoftware.htmlunit.StatusHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlApplet;
 import com.gargoylesoftware.htmlunit.html.HtmlObject;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.webstart.WebStartHandler;
 
 public class SequentialSolution implements Runnable {
 
@@ -32,11 +30,13 @@ public class SequentialSolution implements Runnable {
 		this.ip = ip;
 		this.cmpUrl = cmpUrl;
 	}
+	
+	WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
 
 	public static int k = 0;
 
 	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
+		
 		try {
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
@@ -105,17 +105,14 @@ public class SequentialSolution implements Runnable {
 			webClient.setRefreshHandler(new RefreshHandler() {
 				
 				public void handleRefresh(Page page, URL url, int seconds) throws IOException {
-					System.out.println("RefreshHandler::" + url.toString());					
+					System.out.println("RefreshHandler::" + url.toString());	
+					HtmlPage htmlPage = webClient.getPage(url);
+					synchronized (htmlPage) {
+						webClient.waitForBackgroundJavaScript(5000L);
+					}
 				}
 			});
 			
-			webClient.setWebStartHandler(new WebStartHandler() {
-				
-				public void handleJnlpResponse(WebResponse webResponse) {
-					System.out.println("WebStartHandler::");
-				}
-			});
-
 			URL url2 = new URL(cmpUrl);
 			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
@@ -134,7 +131,8 @@ public class SequentialSolution implements Runnable {
 				synchronized (firstHtmlPage) {
 					webClient.waitForBackgroundJavaScript(5000L);
 				}
-				System.out.println("current page url::" + webClient.getTopLevelWindows().get(0).getEnclosedPage().getUrl());
+				
+				System.out.println("current page url::" + firstHtmlPage.getUrl());
 				long end = System.currentTimeMillis();
 				System.out.println("------------ DONE --------------");
 				System.out.println("Total time taken::::" + (end - start));

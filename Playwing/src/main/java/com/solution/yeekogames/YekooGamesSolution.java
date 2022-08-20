@@ -1,6 +1,7 @@
 package com.solution.yeekogames;
 
 import java.net.URL;
+import java.util.List;
 
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -74,7 +75,7 @@ public class YekooGamesSolution implements Runnable {
 //			});
 
 			URL url2 = new URL(cmpUrl);
-			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
+			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.POST);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
 			requestSettings2.setAdditionalHeader("msisdn", msisdn);
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
@@ -90,24 +91,34 @@ public class YekooGamesSolution implements Runnable {
 				System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
 				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
 
-				HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
-						.getByXPath("/html/body//form//input[@type='submit']").get(0);
+				List<Object> submitFormList = firstHtmlPage.getByXPath("/html/body//form//input[@type='submit']");
 
-				if (htmlSubmitInput != null) {
-					HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
+				if (submitFormList != null && submitFormList.size() > 0) {
+					HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
+							.getByXPath("/html/body//form//input[@type='submit']").get(0);
 
-					synchronized (secondPage) {
-						webClient.waitForBackgroundJavaScript(3000L);
+					htmlSubmitInput.getValueAttribute();
+
+					if (htmlSubmitInput != null) {
+						HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
+
+						synchronized (secondPage) {
+							webClient.waitForBackgroundJavaScript(3000L);
+						}
+
+						HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondPage.getElementById("submit");
+
+						if (secondPageButton != null) {
+							secondPageButton.click();
+
+							System.out.println("------------ DONE --------------");
+						} else {
+							System.out.println("-----------------Not done yet---------------");
+						}
+
 					}
-
-					HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondPage.getElementById("submit");
-					if (secondPageButton != null) {
-						secondPageButton.click();
-						System.out.println("------------ DONE --------------");
-					} else {
-						System.out.println("-----------------Not done yet---------------");
-					}
-
+				} else {
+					System.out.println("submit link on page not found");
 				}
 
 			} else {
