@@ -103,7 +103,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.nonthread.ProcessSequentialSolution</mainClass>
+							<mainClass>com.solution.gemecontent.ProcessGameContentSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
