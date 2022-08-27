@@ -103,7 +103,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.gemecontent.ProcessGameContentSolution</mainClass>
+							<mainClass>com.solution.zurihealth.ProcessZuriHealthSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
