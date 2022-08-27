@@ -1,17 +1,15 @@
-package com.solution.nonthread;
+package com.solution.teampromos;
 
 import java.net.URL;
+import java.util.List;
 
-import com.gargoylesoftware.htmlunit.AlertHandler;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.ConfirmHandler;
 import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
-public class SequentialSolution implements Runnable {
+public class TeamPromosSolution implements Runnable {
 
 	String msisdn;
 
@@ -19,19 +17,20 @@ public class SequentialSolution implements Runnable {
 
 	String cmpUrl;
 
-	public SequentialSolution(String msisdn, String ip, String cmpUrl) {
+	String cssClass;
+
+	public TeamPromosSolution(String msisdn, String ip, String cmpUrl, String cssClass) {
 		this.msisdn = msisdn;
 		this.ip = ip;
 		this.cmpUrl = cmpUrl;
+		this.cssClass = cssClass;
 	}
 
 	public static int k = 0;
 
 	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
-
+		WebClient webClient = new WebClient();
 		try {
-
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
 			webClient.getOptions().setUseInsecureSSL(true);
@@ -57,32 +56,8 @@ public class SequentialSolution implements Runnable {
 			webClient.addRequestHeader("Upgrade-Insecure-Requests", "1");
 			webClient.getOptions().setUseInsecureSSL(true);
 
-			webClient.setAlertHandler(new AlertHandler() {
-
-				private static final long serialVersionUID = -5473045241892709789L;
-
-				public void handleAlert(Page page, String message) {
-					System.out.println("alert handler message::" + message);
-				}
-			});
-
-			webClient.setConfirmHandler(new ConfirmHandler() {
-
-				public boolean handleConfirm(Page page, String message) {
-					System.out.println("confirm alert handler message::" + message);
-					return false;
-				}
-			});
-
-//			webClient.setRefreshHandler(new RefreshHandler() {
-//
-//				public void handleRefresh(Page page, URL url, int seconds) throws IOException {
-//					System.out.println("RefreshHandler::" + url.toString());
-//				}
-//			});
-
 			URL url2 = new URL(cmpUrl);
-			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
+			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.POST);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
 			requestSettings2.setAdditionalHeader("msisdn", msisdn);
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
@@ -91,17 +66,36 @@ public class SequentialSolution implements Runnable {
 
 			if (firstHtmlPage != null) {
 
-				long start = System.currentTimeMillis();
+				synchronized (firstHtmlPage) {
+					webClient.waitForBackgroundJavaScript(3000L);
+				}
 
 				System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
 				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
 
-				Thread.sleep(8000);
+				List<Object> buttonList = firstHtmlPage.getByXPath("/html/body//form//button[@class='button']");
+				firstHtmlPage.getPage().getWebResponse().getContentAsString();
+				
+				HtmlSubmitInput htmlSubmitInput1 =  (HtmlSubmitInput) firstHtmlPage.getElementById("5AbdkUN");
+				htmlSubmitInput1.getValueAttribute();
+				
+				firstHtmlPage.getBody();
+				if (buttonList != null && buttonList.size() > 0) {
+					HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) buttonList.get(0);
 
-				System.out.println("current page url::" + firstHtmlPage.getUrl());
-				long end = System.currentTimeMillis();
-				System.out.println("------------ DONE --------------");
-				System.out.println("Total time taken::::" + (end - start));
+					if (htmlSubmitInput != null) {
+						htmlSubmitInput.getValueAttribute();
+						HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
+						secondPage.getBody();
+
+						System.out.println("------------ DONE --------------");
+
+					} else {
+						System.out.println("-----------------Not done yet---------------");
+					}
+				} else {
+					System.out.println("submit button on page not found");
+				}
 
 			} else {
 				System.out.println("First HTML page not found");
@@ -119,5 +113,4 @@ public class SequentialSolution implements Runnable {
 	public void run() {
 		getProcessSolution(this.msisdn, this.ip, this.cmpUrl);
 	}
-
 }

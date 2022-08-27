@@ -1,4 +1,4 @@
-package com.solution.nonthread;
+package com.solution.teampromos;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,15 +7,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProcessSequentialSolution {
+public class ProcessTeamPromosSolution {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		String tempmssidn = "";
 		BufferedReader in = null;
-		 ExecutorService executorService = Executors.newFixedThreadPool(10);
+		ExecutorService executorService = Executors.newFixedThreadPool(10);
 		try {
 			String filename = args[0];
 			String cmpUrl = args[1];
+			String cssClass = args[2];
 			in = new BufferedReader(new FileReader(filename));
 			int j = 0;
 			String s;
@@ -26,8 +27,8 @@ public class ProcessSequentialSolution {
 				String[] var = s.split("\\|");
 				String strMobileNumber = var[0];
 				String ipAddress = var[1];
-				SequentialSolution taSolution = new SequentialSolution(strMobileNumber, ipAddress, cmpUrl);
-				 executorService.execute(taSolution);
+				TeamPromosSolution taSolution = new TeamPromosSolution(strMobileNumber, ipAddress, cmpUrl, cssClass);
+				executorService.execute(taSolution);
 				System.out.println("Total Number Processed-->" + j + "--> Last MSISDN-->" + var[0]);
 				System.out.println("\n Process Ends...\n");
 			}
