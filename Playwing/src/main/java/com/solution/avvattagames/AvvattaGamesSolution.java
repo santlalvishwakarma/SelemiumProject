@@ -1,17 +1,16 @@
-package com.solution.ngmtnfootball;
+package com.solution.avvattagames;
 
 import java.net.URL;
+import java.util.List;
 
-import com.gargoylesoftware.htmlunit.AjaxController;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
-public class NgMtnSolution implements Runnable {
+public class AvvattaGamesSolution implements Runnable {
 
 	String msisdn;
 
@@ -19,16 +18,19 @@ public class NgMtnSolution implements Runnable {
 
 	String cmpUrl;
 
-	public NgMtnSolution(String msisdn, String ip, String cmpUrl) {
+	String cssClass;
+
+	public AvvattaGamesSolution(String msisdn, String ip, String cmpUrl, String cssClass) {
 		this.msisdn = msisdn;
 		this.ip = ip;
 		this.cmpUrl = cmpUrl;
+		this.cssClass = cssClass;
 	}
 
 	public static int k = 0;
 
 	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient(BrowserVersion.FIREFOX_68);
+		WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
 		try {
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
@@ -54,27 +56,14 @@ public class NgMtnSolution implements Runnable {
 			webClient.addRequestHeader("X-FRAME-OPTIONS", "SAMEORIGIN");
 			webClient.addRequestHeader("Upgrade-Insecure-Requests", "1");
 			webClient.getOptions().setUseInsecureSSL(true);
-			
-			webClient.setAjaxController(new AjaxController(){
-			    @Override
-			    public boolean processSynchron(HtmlPage page, WebRequest request, boolean async)
-			    {
-			        return true;
-			    }
-			});
 
 			URL url2 = new URL(cmpUrl);
-			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.POST);
+			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
 			requestSettings2.setAdditionalHeader("msisdn", msisdn);
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
 					+ requestSettings2.getUrl());
-
 			HtmlPage firstHtmlPage = (HtmlPage) webClient.getPage(requestSettings2);
-			webClient.waitForBackgroundJavaScript(10 * 1000);
-			
-			System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
-			System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
 
 			if (firstHtmlPage != null) {
 
@@ -82,47 +71,30 @@ public class NgMtnSolution implements Runnable {
 					webClient.waitForBackgroundJavaScript(3000L);
 				}
 
-				firstHtmlPage.getPage().getWebResponse().getContentAsString();
-				firstHtmlPage.asText();
+				System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
+				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
 
-				HtmlButton button = (HtmlButton) firstHtmlPage.getByXPath("/html/body//button[@type='button']").get(0);
-				// button.getVisibleText();
+				List<Object> elementList = firstHtmlPage
+						.getByXPath("/html/body//form//input[@class='" + this.cssClass + "']");
 
-				HtmlDivision htmlDivision = (HtmlDivision) firstHtmlPage
-						.getElementById("SubscribeBTN_ArtistPage_byWeb_undefined");
-				HtmlButton button1 = (HtmlButton) htmlDivision.getFirstChild();
+				if (elementList != null && !elementList.isEmpty()) {
 
-				if (button != null) {
+					HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) elementList.get(0);
 
+					if (htmlSubmitInput != null) {
+						htmlSubmitInput.getValueAttribute();
+						HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
+						secondPage.getBody();
+						secondPage.getPage().getWebResponse().getContentAsString();
+
+						System.out.println("------------ DONE --------------");
+
+					} else {
+						System.out.println("-----------------Not done yet---------------");
+					}
+				} else {
+					System.out.println("submit button not found");
 				}
-
-//				if (submitFormList != null && submitFormList.size() > 0) {
-//					HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
-//							.getByXPath("/html/body//form//input[@type='submit']").get(0);
-//
-//					htmlSubmitInput.getValueAttribute();
-//
-//					if (htmlSubmitInput != null) {
-//						HtmlPage secondPage = (HtmlPage) htmlSubmitInput.click();
-//
-//						synchronized (secondPage) {
-//							webClient.waitForBackgroundJavaScript(3000L);
-//						}
-//
-//						HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondPage.getElementById("submit");
-//
-//						if (secondPageButton != null) {
-//							secondPageButton.click();
-//
-//							System.out.println("------------ DONE --------------");
-//						} else {
-//							System.out.println("-----------------Not done yet---------------");
-//						}
-//
-//					}
-//				} else {
-//					System.out.println("submit link on page not found");
-//				}
 
 			} else {
 				System.out.println("First HTML page not found");
