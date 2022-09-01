@@ -43,7 +43,7 @@ public class AvvattaGamesSolution implements Runnable {
 			webClient.getOptions().setTimeout(20000);
 			webClient.setJavaScriptTimeout(8000L);
 			webClient.addRequestHeader("X-Forwarded-For", ip);
-			webClient.addRequestHeader("msisdn", msisdn);
+			webClient.addRequestHeader("x-msisdn", msisdn);
 			webClient.addRequestHeader("User-Agent",
 					"Mozilla/5.0 (Linux; Android 12; SM-S906N Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/80.0.3987.119 Mobile Safari/537.36\r\n");
 			webClient.waitForBackgroundJavaScript(10000L);
@@ -60,7 +60,7 @@ public class AvvattaGamesSolution implements Runnable {
 			URL url2 = new URL(cmpUrl);
 			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
-			requestSettings2.setAdditionalHeader("msisdn", msisdn);
+			requestSettings2.setAdditionalHeader("x-msisdn", msisdn);
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
 					+ requestSettings2.getUrl());
 			HtmlPage firstHtmlPage = (HtmlPage) webClient.getPage(requestSettings2);
@@ -75,7 +75,7 @@ public class AvvattaGamesSolution implements Runnable {
 				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
 
 				List<Object> elementList = firstHtmlPage
-						.getByXPath("/html/body//form//input[@class='" + this.cssClass + "']");
+						.getByXPath("/html/body//input[@class='" + this.cssClass + "']");
 
 				if (elementList != null && !elementList.isEmpty()) {
 
