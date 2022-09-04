@@ -103,7 +103,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.avvattagames.ProcessAvvataGamesSolution</mainClass>
+							<mainClass>com.solution.slypeestore.ProcessSlypeeStoreSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
