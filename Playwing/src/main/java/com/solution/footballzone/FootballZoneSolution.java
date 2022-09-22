@@ -1,17 +1,14 @@
-package com.solution.slypeestore;
+package com.solution.footballzone;
 
 import java.net.URL;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class SlypeeStoreSolution implements Runnable {
+public class FootballZoneSolution implements Runnable {
 
 	String msisdn;
 
@@ -19,7 +16,7 @@ public class SlypeeStoreSolution implements Runnable {
 
 	String cmpUrl;
 
-	public SlypeeStoreSolution(String msisdn, String ip, String cmpUrl) {
+	public FootballZoneSolution(String msisdn, String ip, String cmpUrl) {
 		this.msisdn = msisdn;
 		this.ip = ip;
 		this.cmpUrl = cmpUrl;
@@ -28,7 +25,7 @@ public class SlypeeStoreSolution implements Runnable {
 	public static int k = 0;
 
 	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient(BrowserVersion.CHROME);
+		WebClient webClient = new WebClient();
 		try {
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
@@ -56,7 +53,7 @@ public class SlypeeStoreSolution implements Runnable {
 			webClient.getOptions().setUseInsecureSSL(true);
 
 			URL url2 = new URL(cmpUrl);
-			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
+			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.POST);
 			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
 			requestSettings2.setAdditionalHeader("msisdn", msisdn);
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
@@ -71,27 +68,25 @@ public class SlypeeStoreSolution implements Runnable {
 
 				System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
 				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
-				
-				HtmlInput htmlInput = firstHtmlPage.getElementByName("ph");
-				
-				if(htmlInput != null) {
-					htmlInput.setValueAttribute(msisdn);
-					
-					HtmlButton htmlButton = (HtmlButton) firstHtmlPage.getByXPath("/html/body//form//button[@type='submit']").get(0);
-					
-					if(htmlButton != null) {
-						Page page = htmlButton.click();
-						
-						if(page != null) {
-							System.out.println("------------ DONE --------------");
-						} else {
-							System.out.println("-----------------Not done yet---------------");
-						}
-					} else {
-						System.out.println("submit button on page not found");
+
+				HtmlAnchor htmlAnchor = (HtmlAnchor) firstHtmlPage.getElementById("activation_link");
+
+				if (htmlAnchor != null) {
+
+					HtmlPage secondPage = (HtmlPage) htmlAnchor.click();
+
+					synchronized (secondPage) {
+						webClient.waitForBackgroundJavaScript(3000L);
 					}
+
+					if (secondPage != null) {
+						System.out.println("------------ DONE --------------");
+					} else {
+						System.out.println("-----------------Not done yet---------------");
+					}
+
 				} else {
-					System.out.println("input element not found");
+					System.out.println("submit link on page not found");
 				}
 
 			} else {
@@ -110,5 +105,4 @@ public class SlypeeStoreSolution implements Runnable {
 	public void run() {
 		getProcessSolution(this.msisdn, this.ip, this.cmpUrl);
 	}
-
 }

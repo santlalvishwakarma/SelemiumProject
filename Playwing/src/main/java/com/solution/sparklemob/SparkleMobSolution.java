@@ -1,8 +1,7 @@
-package com.solution.slypeestore;
+package com.solution.sparklemob;
 
 import java.net.URL;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -11,24 +10,21 @@ import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class SlypeeStoreSolution implements Runnable {
+public class SparkleMobSolution implements Runnable {
 
 	String msisdn;
 
-	String ip;
-
 	String cmpUrl;
 
-	public SlypeeStoreSolution(String msisdn, String ip, String cmpUrl) {
+	public SparkleMobSolution(String msisdn, String cmpUrl) {
 		this.msisdn = msisdn;
-		this.ip = ip;
 		this.cmpUrl = cmpUrl;
 	}
 
 	public static int k = 0;
 
-	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient(BrowserVersion.CHROME);
+	public String getProcessSolution(String msisdn, String cmpUrl) {
+		WebClient webClient = new WebClient();
 		try {
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
@@ -40,7 +36,6 @@ public class SlypeeStoreSolution implements Runnable {
 			webClient.getOptions().setThrowExceptionOnScriptError(false);
 			webClient.getOptions().setTimeout(20000);
 			webClient.setJavaScriptTimeout(8000L);
-			webClient.addRequestHeader("X-Forwarded-For", ip);
 			webClient.addRequestHeader("msisdn", msisdn);
 			webClient.addRequestHeader("User-Agent",
 					"Mozilla/5.0 (Linux; Android 12; SM-S906N Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/80.0.3987.119 Mobile Safari/537.36\r\n");
@@ -57,7 +52,6 @@ public class SlypeeStoreSolution implements Runnable {
 
 			URL url2 = new URL(cmpUrl);
 			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
-			requestSettings2.setAdditionalHeader("X-Forwarded-For", ip);
 			requestSettings2.setAdditionalHeader("msisdn", msisdn);
 			System.out.println("Request Params -->\n" + requestSettings2.getRequestParameters() + "-->\nURL-->"
 					+ requestSettings2.getUrl());
@@ -70,28 +64,40 @@ public class SlypeeStoreSolution implements Runnable {
 				}
 
 				System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
-				System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
-				
-				HtmlInput htmlInput = firstHtmlPage.getElementByName("ph");
-				
-				if(htmlInput != null) {
+				System.out.println("Mobile Number --> " + msisdn);
+
+				HtmlButton htmlButton = (HtmlButton) firstHtmlPage.getElementById("btn_sbmit");
+
+				HtmlInput htmlInput = (HtmlInput) firstHtmlPage.getElementById("telnumber");
+
+				if (htmlInput != null) {
 					htmlInput.setValueAttribute(msisdn);
-					
-					HtmlButton htmlButton = (HtmlButton) firstHtmlPage.getByXPath("/html/body//form//button[@type='submit']").get(0);
-					
-					if(htmlButton != null) {
-						Page page = htmlButton.click();
-						
-						if(page != null) {
-							System.out.println("------------ DONE --------------");
-						} else {
-							System.out.println("-----------------Not done yet---------------");
-						}
-					} else {
-						System.out.println("submit button on page not found");
+					HtmlPage secondPage = (HtmlPage) htmlButton.click();
+
+					synchronized (secondPage) {
+						webClient.waitForBackgroundJavaScript(3000L);
 					}
-				} else {
-					System.out.println("input element not found");
+
+					if (secondPage != null) {
+
+						HtmlButton secondHtmlButton = (HtmlButton) firstHtmlPage.getElementById("btn_submit_pin");
+
+						HtmlInput secondHtmlInput = (HtmlInput) firstHtmlPage.getElementById("pin_txt");
+
+						if (secondHtmlInput != null) {
+							secondHtmlInput.setValueAttribute("1234");
+							Page lastPage = secondHtmlButton.click();
+
+							if (lastPage != null) {
+								System.out.println("------------ DONE --------------");
+							}
+						} else {
+							System.out.println("Second page input not found");
+						}
+
+					} else {
+						System.out.println("Second Page not found");
+					}
 				}
 
 			} else {
@@ -108,7 +114,6 @@ public class SlypeeStoreSolution implements Runnable {
 	}
 
 	public void run() {
-		getProcessSolution(this.msisdn, this.ip, this.cmpUrl);
+		getProcessSolution(this.msisdn, this.cmpUrl);
 	}
-
 }

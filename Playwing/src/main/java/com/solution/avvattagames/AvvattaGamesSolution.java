@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
@@ -32,13 +33,15 @@ public class AvvattaGamesSolution implements Runnable {
     WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
     try {
       Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+      ProxyConfig proxyConfig = new ProxyConfig("183.87.63.40", 48946);
+      webClient.getOptions().setProxyConfig(proxyConfig);
       webClient.getOptions().setUseInsecureSSL(true);
       webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
       webClient.getOptions().setJavaScriptEnabled(true);
       webClient.getOptions().setRedirectEnabled(true);
       webClient.getOptions().setCssEnabled(true);
       webClient.getOptions().setThrowExceptionOnScriptError(false);
-      webClient.getOptions().setTimeout(20000);
+      webClient.getOptions().setTimeout(30000);
       webClient.setJavaScriptTimeout(8000L);
       webClient.addRequestHeader("X-Forwarded-For", ip);
       webClient.addRequestHeader("x-msisdn", msisdn);
@@ -60,7 +63,7 @@ public class AvvattaGamesSolution implements Runnable {
           .getUrl());
       HtmlPage firstHtmlPage = (HtmlPage)webClient.getPage(requestSettings2);
       
-      Thread.sleep(15000);
+      //Thread.sleep(15000);
       
       if (firstHtmlPage != null) {
         synchronized (firstHtmlPage) {
@@ -68,6 +71,7 @@ public class AvvattaGamesSolution implements Runnable {
         } 
         System.out.println("URL--> " + firstHtmlPage.getUrl().toString());
         System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
+        System.out.println(firstHtmlPage.getPage().getWebResponse().getContentAsString());
         HtmlButton htmlButton = (HtmlButton)firstHtmlPage.getElementById("action-btn");
         if (htmlButton != null) {
           htmlButton.getValueAttribute();
