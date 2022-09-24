@@ -1,6 +1,14 @@
 package com.solution.honduras;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
@@ -9,13 +17,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class OneClickHnV2Solution {
   public static int k = 0;
@@ -23,7 +24,7 @@ public class OneClickHnV2Solution {
   public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
     WebClient webClient = null;
     try {
-      webClient = new WebClient(BrowserVersion.FIREFOX_52);
+     // webClient = new WebClient(BrowserVersion.FIREFOX_52);
       webClient.getOptions().setUseInsecureSSL(true);
       webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
       webClient.getOptions().setJavaScriptEnabled(true);

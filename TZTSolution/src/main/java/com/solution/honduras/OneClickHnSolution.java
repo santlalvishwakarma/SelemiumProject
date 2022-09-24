@@ -1,7 +1,12 @@
 package com.solution.honduras;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
 import com.gargoylesoftware.htmlunit.AjaxController;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -13,11 +18,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.linkedin.urls.Url;
 import com.linkedin.urls.detection.UrlDetector;
 import com.linkedin.urls.detection.UrlDetectorOptions;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
 
 public class OneClickHnSolution {
   public static int k = 0;
@@ -25,7 +25,7 @@ public class OneClickHnSolution {
   public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
     WebClient webClient = null;
     try {
-      webClient = new WebClient(BrowserVersion.FIREFOX_52);
+      //webClient = new WebClient(BrowserVersion.FIREFOX_52);
       webClient.getOptions().setUseInsecureSSL(true);
       webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
       webClient.getOptions().setJavaScriptEnabled(true);

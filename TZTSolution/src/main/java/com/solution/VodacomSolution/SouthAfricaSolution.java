@@ -1,6 +1,11 @@
 package com.solution.VodacomSolution;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -8,11 +13,6 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
 
 public class SouthAfricaSolution {
   public static int k = 0;
@@ -20,7 +20,7 @@ public class SouthAfricaSolution {
   public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
     WebClient webClient = null;
     try {
-      webClient = new WebClient(BrowserVersion.FIREFOX_52);
+     // webClient = new WebClient(BrowserVersion.FIREFOX_52);
       webClient.getOptions().setUseInsecureSSL(true);
       webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
       webClient.getOptions().setJavaScriptEnabled(true);

@@ -2,11 +2,20 @@ package com.solution.sparklemob;
 
 import java.net.URL;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebWindowEvent;
+import com.gargoylesoftware.htmlunit.WebWindowListener;
 import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -16,10 +25,13 @@ public class SparkleMobSolution implements Runnable {
 	String msisdn;
 
 	String cmpUrl;
+	
+	String chromeDriverPath;
 
-	public SparkleMobSolution(String msisdn, String cmpUrl) {
+	public SparkleMobSolution(String msisdn, String cmpUrl, String chromeDriverPath) {
 		this.msisdn = msisdn;
 		this.cmpUrl = cmpUrl;
+		this.chromeDriverPath = chromeDriverPath;
 	}
 
 	public static int k = 0;
@@ -51,6 +63,42 @@ public class SparkleMobSolution implements Runnable {
 			webClient.addRequestHeader("Upgrade-Insecure-Requests", "1");
 			webClient.getOptions().setUseInsecureSSL(true);
 
+			webClient.addWebWindowListener(new WebWindowListener() {
+
+				public void webWindowOpened(WebWindowEvent event) {
+					System.out.println("opened");
+					;
+					HtmlPage page = (HtmlPage) event.getWebWindow().getEnclosedPage();
+
+					HtmlButtonInput secondHtmlButton = (HtmlButtonInput) page.getElementById("btn_submit_pin");
+
+					if (secondHtmlButton != null) {
+						System.out.println("opened secondHtmlButton");
+					}
+
+				}
+
+				public void webWindowContentChanged(WebWindowEvent event) {
+					System.out.println("changed");
+					HtmlPage page = (HtmlPage) event.getWebWindow().getEnclosedPage();
+					HtmlButtonInput secondHtmlButton = (HtmlButtonInput) page.getElementById("btn_submit_pin");
+
+					if (secondHtmlButton != null) {
+						System.out.println("changed secondHtmlButton");
+					}
+				}
+
+				public void webWindowClosed(WebWindowEvent event) {
+					System.out.println("closed");
+					HtmlPage page = (HtmlPage) event.getWebWindow().getEnclosedPage();
+					HtmlButtonInput secondHtmlButton = (HtmlButtonInput) page.getElementById("btn_submit_pin");
+
+					if (secondHtmlButton != null) {
+						System.out.println("closed secondHtmlButton");
+					}
+				}
+			});
+
 			URL url2 = new URL(cmpUrl);
 			WebRequest requestSettings2 = new WebRequest(url2, HttpMethod.GET);
 			requestSettings2.setAdditionalHeader("msisdn", msisdn);
@@ -75,27 +123,14 @@ public class SparkleMobSolution implements Runnable {
 					htmlInput.setValueAttribute(msisdn);
 					HtmlPage secondPage = (HtmlPage) htmlButton.click();
 
-					Thread.sleep(5000);
-
-					// DialogWindow dialogWindow = webClient.openDialogWindow(url, opener,
-					// dialogArguments)
-
-					HtmlPage htmlPage = (HtmlPage) webClient.getWebWindows().get(0).getEnclosedPage();
-
-					HtmlButtonInput secondHtmlButton = (HtmlButtonInput) htmlPage.getElementById("btn_submit_pin");
-					
-					if(secondHtmlButton != null) {
-						System.out.println("second button found");
-					}
-
 					synchronized (secondPage) {
 						webClient.waitForBackgroundJavaScript(3000L);
 					}
 
 					if (secondPage != null) {
 
-//						HtmlButtonInput secondHtmlButton = (HtmlButtonInput) secondPage
-//								.getElementById("btn_submit_pin");
+						HtmlButtonInput secondHtmlButton = (HtmlButtonInput) secondPage
+								.getElementById("btn_submit_pin");
 
 						HtmlInput secondHtmlInput = (HtmlInput) secondPage.getElementById("pin_txt");
 
@@ -130,7 +165,51 @@ public class SparkleMobSolution implements Runnable {
 		return null;
 	}
 
+	public void usingSalenium(String msisdn, String cmpUrl, String chromeDriverPath) {
+		ChromeDriver driver = null;
+
+		try {
+			System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.addArguments("--headless");
+			driver = new ChromeDriver(chromeOptions);
+			driver.get(cmpUrl);
+
+			driver.findElementById("telnumber").sendKeys(msisdn);
+			driver.findElementById("btn_sbmit").click();
+
+			// wait to let the modal box be visible
+			WebDriverWait wait = new WebDriverWait(driver, 10);
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("myModal")));
+
+			// to fetch the web element of the modal container
+			//System.out.println("Fetching the web element for modal container");
+			WebElement modalContainer = driver.findElement(By.id("myModal"));
+
+			if (modalContainer != null) {
+				// to fetch the web elements of the modal content and interact with them
+				// code to fetch content of modal body and verify it
+				//System.out.println("Fetching modal body content and asserting it");
+				WebElement elementInput = driver.findElement(By.id("pin_txt"));
+				elementInput.sendKeys("1234");
+				WebElement modalContentButton = driver.findElement(By.id("btn_submit_pin"));
+				modalContentButton.click();
+				System.out.println("------------ DONE --------------");
+				driver.quit();
+			} else {
+				System.out.println("invalid number");
+			}
+
+		} catch (Exception e) {
+			//e.printStackTrace();
+			System.out.println("Invalid number");
+		} finally {
+			driver.quit();
+		}
+	}
+
 	public void run() {
-		getProcessSolution(this.msisdn, this.cmpUrl);
+		// getProcessSolution(this.msisdn, this.cmpUrl);
+		usingSalenium(msisdn, cmpUrl, chromeDriverPath);
 	}
 }

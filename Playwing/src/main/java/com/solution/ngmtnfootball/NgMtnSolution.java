@@ -28,7 +28,7 @@ public class NgMtnSolution implements Runnable {
 	public static int k = 0;
 
 	public String getProcessSolution(String msisdn, String ip, String cmpUrl) {
-		WebClient webClient = new WebClient(BrowserVersion.FIREFOX_68);
+		WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
 		try {
 			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
@@ -83,7 +83,6 @@ public class NgMtnSolution implements Runnable {
 				}
 
 				firstHtmlPage.getPage().getWebResponse().getContentAsString();
-				firstHtmlPage.asText();
 
 				HtmlButton button = (HtmlButton) firstHtmlPage.getByXPath("/html/body//button[@type='button']").get(0);
 				// button.getVisibleText();

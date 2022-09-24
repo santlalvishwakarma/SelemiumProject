@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
@@ -33,8 +32,6 @@ public class AvvattaGamesSolution implements Runnable {
     WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
     try {
       Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
-      ProxyConfig proxyConfig = new ProxyConfig("183.87.63.40", 48946);
-      webClient.getOptions().setProxyConfig(proxyConfig);
       webClient.getOptions().setUseInsecureSSL(true);
       webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
       webClient.getOptions().setJavaScriptEnabled(true);
