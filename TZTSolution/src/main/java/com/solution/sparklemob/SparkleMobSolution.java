@@ -172,6 +172,8 @@ public class SparkleMobSolution implements Runnable {
 			System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 			ChromeOptions chromeOptions = new ChromeOptions();
 			chromeOptions.addArguments("--headless");
+			chromeOptions.addArguments("no-sandbox");
+			chromeOptions.addArguments("disable-extensions");
 			driver = new ChromeDriver(chromeOptions);
 			driver.get(cmpUrl);
 
