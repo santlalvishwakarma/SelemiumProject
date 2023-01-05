@@ -248,7 +248,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.sparklemob.SaleniumProcessSparkleMobSolution</mainClass>
+							<mainClass>com.solution.vpnsolution.VPNProcessSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
