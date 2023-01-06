@@ -12,6 +12,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -232,11 +234,11 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/net.lightbody.bmp/browsermob-proxy -->
-		<!-- <dependency>
+		<dependency>
 			<groupId>net.lightbody.bmp</groupId>
 			<artifactId>browsermob-core</artifactId>
 			<version>2.1.5</version>
-		</dependency> -->
+		</dependency>
 
 	</dependencies>
 
@@ -248,7 +250,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.vpnsolution.VPNProcessSolution</mainClass>
+							<mainClass>com.solution.perusalenium.ProcessPeruSaleniumSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
