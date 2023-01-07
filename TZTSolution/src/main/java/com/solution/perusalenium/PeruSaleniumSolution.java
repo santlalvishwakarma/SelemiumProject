@@ -52,8 +52,8 @@ public class PeruSaleniumSolution implements Runnable {
 			ChromeOptions chromeOptions = new ChromeOptions();
 			//OperaOptions operaOptions = new OperaOptions();
 			 String proxyOption = "--proxy-server=" + seleniumProxy.getHttpProxy();
-			chromeOptions.addArguments("--headless");
-			chromeOptions.addArguments("no-sandbox");
+//			chromeOptions.addArguments("--headless");
+//			chromeOptions.addArguments("no-sandbox");
 			chromeOptions.addArguments("disable-extensions");
 			chromeOptions.addArguments(proxyOption);
 			chromeOptions.addArguments("--disable-web-security");
@@ -69,17 +69,17 @@ public class PeruSaleniumSolution implements Runnable {
 			driver = new ChromeDriver(chromeOptions);
 			driver.get(cmpUrl);
 			
-			WebDriverWait wait = new WebDriverWait(driver, 10);
+			WebDriverWait wait = new WebDriverWait(driver, 100);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btnSubmitSendPin")));
 			
 			//driver.findElementById("inputMobile").sendKeys(msisdn);
 			driver.findElementByClassName("btnSubmitSendPin").click();
-			WebDriverWait wait2 = new WebDriverWait(driver, 10);
-			wait2.until(ExpectedConditions.visibilityOfElementLocated(By.className("btnSubmitSendPin")));
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btnSubmitSendPin")));
 			
-			//driver.findElementById("pin").sendKeys("1234");
+			Thread.sleep(2000);
 			driver.findElementByClassName("btnSubmitSendPin").click();
 			
+			Thread.sleep(3000);
 			System.out.println("------------ DONE --------------");
 			driver.quit();
 			
