@@ -248,6 +248,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
+				<finalName>PeruSolutionWithUserAgentHeadless</finalName>
 					<archive>
 						<manifest>
 							<mainClass>com.solution.perusalenium.ProcessPeruSaleniumSolution</mainClass>
@@ -256,6 +257,7 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
