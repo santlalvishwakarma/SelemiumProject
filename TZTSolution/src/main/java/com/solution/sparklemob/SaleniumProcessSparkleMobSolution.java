@@ -26,6 +26,7 @@ public class SaleniumProcessSparkleMobSolution {
 				System.out.println("Details--> Product URL -->" + cmpUrl + "--> Data Details -->" + filename);
 				String[] var = s.split("\\|");
 				String strMobileNumber = var[0];
+				strMobileNumber = strMobileNumber.substring(2, strMobileNumber.lastIndexOf(""));
 				SparkleMobSolution taSolution = new SparkleMobSolution(strMobileNumber, cmpUrl, chromeDriverPath);
 				executorService.execute(taSolution);
 				System.out.println("Total Number Processed-->" + j + "--> Last MSISDN-->" + var[0]);

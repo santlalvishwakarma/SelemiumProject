@@ -1,12 +1,7 @@
 package com.solution.playwing;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser;
 
 public class PlaywingSolution implements Runnable {
 	String msisdn;
@@ -53,66 +48,66 @@ public class PlaywingSolution implements Runnable {
 
 			UnexpectedPage unexpectedPage = webClient.getPage(cmpUrl);
 
-			if (unexpectedPage != null) {
-
-				synchronized (unexpectedPage) {
-					webClient.waitForBackgroundJavaScript(3000L);
-				}
-
-				Page page = unexpectedPage.getEnclosingWindow().getEnclosedPage();
-
-				StringWebResponse stringWebResponse = new StringWebResponse(page.getWebResponse().getContentAsString(),
-						page.getUrl());
-				HtmlPage firstHtmlPage = new HtmlUnitNekoHtmlParser().parseHtml(stringWebResponse,
-						webClient.getCurrentWindow());
-
-				if (firstHtmlPage != null) {
-					
-					synchronized (firstHtmlPage) {
-						webClient.waitForBackgroundJavaScript(3000L);
-					}
-
-					System.out.println("URL--> " + page.getUrl().toString());
-					System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
-
-					HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
-							.getElementById("submitformbutton");
-
-					if (htmlSubmitInput != null) {
-						UnexpectedPage secondPage = (UnexpectedPage) htmlSubmitInput.click();
-
-						synchronized (secondPage) {
-							webClient.waitForBackgroundJavaScript(3000L);
-						}
-
-						Page page2 = secondPage.getEnclosingWindow().getEnclosedPage();
-
-						StringWebResponse stringWebResponse2 = new StringWebResponse(
-								page2.getWebResponse().getContentAsString(), page2.getUrl());
-						HtmlPage secondHtmlPage = new HtmlUnitNekoHtmlParser().parseHtml(stringWebResponse2,
-								webClient.getCurrentWindow());
-
-						secondHtmlPage.getBody();
-
-						UnexpectedPage click = null;
-						HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondHtmlPage
-								.getElementById("verifyformbuttonAR");
-						if (secondPageButton != null)
-							click = secondPageButton.click();
-
-						if (click != null) {
-							System.out.println("------------ DONE --------------");
-						} else {
-							System.out.println("-----------------Not done yet---------------");
-						}
-					}
-
-				} else {
-					System.out.println("First HTML page not found");
-				}
-			} else {
-				System.out.println("Page Not Found");
-			}
+//			if (unexpectedPage != null) {
+//
+//				synchronized (unexpectedPage) {
+//					webClient.waitForBackgroundJavaScript(3000L);
+//				}
+//
+//				Page page = unexpectedPage.getEnclosingWindow().getEnclosedPage();
+//
+//				StringWebResponse stringWebResponse = new StringWebResponse(page.getWebResponse().getContentAsString(),
+//						page.getUrl());
+//				HtmlPage firstHtmlPage = new HtmlUnitNekoHtmlParser().parseHtml(stringWebResponse,
+//						webClient.getCurrentWindow());
+//
+//				if (firstHtmlPage != null) {
+//					
+//					synchronized (firstHtmlPage) {
+//						webClient.waitForBackgroundJavaScript(3000L);
+//					}
+//
+//					System.out.println("URL--> " + page.getUrl().toString());
+//					System.out.println("IP & Mobile Number -->" + ip + " & " + msisdn);
+//
+//					HtmlSubmitInput htmlSubmitInput = (HtmlSubmitInput) firstHtmlPage
+//							.getElementById("submitformbutton");
+//
+//					if (htmlSubmitInput != null) {
+//						UnexpectedPage secondPage = (UnexpectedPage) htmlSubmitInput.click();
+//
+//						synchronized (secondPage) {
+//							webClient.waitForBackgroundJavaScript(3000L);
+//						}
+//
+//						Page page2 = secondPage.getEnclosingWindow().getEnclosedPage();
+//
+//						StringWebResponse stringWebResponse2 = new StringWebResponse(
+//								page2.getWebResponse().getContentAsString(), page2.getUrl());
+//						HtmlPage secondHtmlPage = new HtmlUnitNekoHtmlParser().parseHtml(stringWebResponse2,
+//								webClient.getCurrentWindow());
+//
+//						secondHtmlPage.getBody();
+//
+//						UnexpectedPage click = null;
+//						HtmlSubmitInput secondPageButton = (HtmlSubmitInput) secondHtmlPage
+//								.getElementById("verifyformbuttonAR");
+//						if (secondPageButton != null)
+//							click = secondPageButton.click();
+//
+//						if (click != null) {
+//							System.out.println("------------ DONE --------------");
+//						} else {
+//							System.out.println("-----------------Not done yet---------------");
+//						}
+//					}
+//
+//				} else {
+//					System.out.println("First HTML page not found");
+//				}
+//			} else {
+//				System.out.println("Page Not Found");
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Exception occured on MSISDN-->" + msisdn + "--> Error Msg-->" + e.getMessage());

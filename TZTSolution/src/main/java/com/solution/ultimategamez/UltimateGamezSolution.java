@@ -62,8 +62,11 @@ public class UltimateGamezSolution implements Runnable {
 //			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("textPhonenumber")));
 			driver.findElementById("textPhonenumber").sendKeys(msisdn);
 			WebElement webElement = driver.findElementByXPath("/html/body//form//button[@type='submit']");
-			System.out.println("WebElement::" + webElement);
 			driver.findElementByXPath("/html/body//form//button[@type='submit']").click();
+			
+			synchronized (driver) {
+				driver.wait(10000);
+			}
 			
 			Boolean isPresent = driver.findElements(By.className("message")).size() > 0;
 			
