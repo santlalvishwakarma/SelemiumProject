@@ -248,10 +248,10 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-				<finalName>ProcessPeruSolution</finalName>
+				<finalName>ShineWorldSolutionHeadless</finalName>
 					<archive>
 						<manifest>
-							<mainClass>com.solution.perusalenium.ProcessPeruSaleniumSolution</mainClass>
+							<mainClass>com.solution.entelsports.ProcessShineWorldSolution</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
